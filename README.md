@@ -45,4 +45,6 @@ This repository does not bundle third-party datasets, models, fonts, engines, or
 
 ## License
 
+The author's bilingual use statement is in [DECLARATION.md](DECLARATION.md).
+
 Code: GNU GPL v3.0 or later (see LICENSE). Derivative works must remain open under the same license. Third-party data sources: see THIRD_PARTY.md; datasets are fetched at runtime and are not redistributed with this repository.
