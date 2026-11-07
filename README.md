@@ -13,6 +13,11 @@ A portable skill for turning 9 source languages (zh/it/en/de/fr/es/ru/ja/la) int
 
 This list is not exhaustive: any client that supports Agent Skills / `SKILL.md`, or can read files and run Python, can use the package within its capabilities.
 
+## Documentation
+
+- [技能说明书](技能说明书.md) — 完整中文使用说明
+- [Third-party data and links](THIRD_PARTY.md)
+
 ## Quick start
 
 ```bash
