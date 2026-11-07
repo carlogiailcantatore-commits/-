@@ -1,0 +1,385 @@
+{
+  "en": {
+    "name": "English",
+    "systems": [
+      {
+        "id": "CEFR-J",
+        "name": "CEFR-J Vocabulary Profile",
+        "levels": [
+          "A1",
+          "A2",
+          "B1",
+          "B2",
+          "C1",
+          "C2"
+        ],
+        "sources": [
+          {
+            "url": "https://raw.githubusercontent.com/openlanguageprofiles/olp-en-cefrj/master/cefrj-vocabulary-profile-1.5.csv",
+            "format": "csv",
+            "word_column": "headword",
+            "level_column": "CEFR"
+          }
+        ],
+        "note": "CC BY-SA 4.0 / CEFR-J terms; cite Tono Laboratory"
+      }
+    ]
+  },
+  "it": {
+    "name": "Italian",
+    "systems": [
+      {
+        "id": "CEFR",
+        "name": "CEFR (Italian) / Profilo della lingua italiana",
+        "levels": [
+          "A1",
+          "A2",
+          "B1",
+          "B2",
+          "C1",
+          "C2"
+        ],
+        "sources": [
+          {
+            "url": "https://web.archive.org/web/2023id_/https://www.unistrapg.it/profilo_lingua_italiana/site/liste_lessicali_a1.html",
+            "format": "html",
+            "parser": "profilo_html",
+            "level": "A1"
+          },
+          {
+            "url": "https://web.archive.org/web/2023id_/https://www.unistrapg.it/profilo_lingua_italiana/site/liste_lessicali_a2.html",
+            "format": "html",
+            "parser": "profilo_html",
+            "level": "A2"
+          },
+          {
+            "url": "https://web.archive.org/web/2023id_/https://www.unistrapg.it/profilo_lingua_italiana/site/liste_lessicali_b1.html",
+            "format": "html",
+            "parser": "profilo_html",
+            "level": "B1"
+          },
+          {
+            "url": "https://web.archive.org/web/2023id_/https://www.unistrapg.it/profilo_lingua_italiana/site/liste_lessicali_b2.html",
+            "format": "html",
+            "parser": "profilo_html",
+            "level": "B2"
+          }
+        ],
+        "pointers": [
+          "https://cvcl.unistrapg.it/pagina/l-profilo-della-lingua-italiana-livelli-del-qcer-a1-a2-b1-b2",
+          "https://www.unistrapg.it/profilo_lingua_italiana/"
+        ],
+        "note": "Profilo della lingua italiana 官方 A1–B2 词汇清单（Wayback 快照；内置解析器 profilo_html）",
+        "display": "CEFR (Profilo)"
+      }
+    ]
+  },
+  "de": {
+    "name": "German",
+    "systems": [
+      {
+        "id": "Goethe",
+        "name": "Goethe-Institut Wortlisten",
+        "levels": [
+          "A1",
+          "A2",
+          "B1",
+          "B2",
+          "C1",
+          "C2"
+        ],
+        "sources": [
+          {
+            "url": "https://www.goethe.de/pro/relaunch/prf/de/Goethe-Zertifikat_A1_Wortliste.pdf",
+            "format": "pdf",
+            "parser": "goethe_pdf",
+            "level": "A1"
+          },
+          {
+            "url": "https://www.goethe.de/pro/relaunch/prf/de/Goethe-Zertifikat_A2_Wortliste.pdf",
+            "format": "pdf",
+            "parser": "goethe_pdf",
+            "level": "A2"
+          },
+          {
+            "url": "https://www.goethe.de/pro/relaunch/prf/de/Goethe-Zertifikat_B1_Wortliste.pdf",
+            "format": "pdf",
+            "parser": "goethe_pdf",
+            "level": "B1"
+          }
+        ],
+        "pointers": [
+          "https://www.goethe.de/pro/relaunch/prf/de/Goethe-Zertifikat_A1_Wortliste.pdf",
+          "https://www.goethe.de/pro/relaunch/prf/de/Goethe-Zertifikat_A2_Wortliste.pdf",
+          "https://www.goethe.de/pro/relaunch/prf/de/Goethe-Zertifikat_B1_Wortliste.pdf"
+        ],
+        "note": "Goethe 官方 A1–B1 PDF 词表（内置解析器 goethe_pdf）"
+      }
+    ]
+  },
+  "fr": {
+    "name": "French",
+    "systems": [
+      {
+        "id": "CEFR",
+        "name": "CEFR (French)",
+        "levels": [
+          "A1",
+          "A2",
+          "B1",
+          "B2",
+          "C1",
+          "C2"
+        ],
+        "sources": [
+          {
+            "url": "https://raw.githubusercontent.com/hyunahparc/bienvenue-au-croissant/main/data/a1.json",
+            "format": "json",
+            "word_column": "french",
+            "level_column": "level"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/hyunahparc/bienvenue-au-croissant/main/data/a2.json",
+            "format": "json",
+            "word_column": "french",
+            "level_column": "level"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/hyunahparc/bienvenue-au-croissant/main/data/b1.json",
+            "format": "json",
+            "word_column": "french",
+            "level_column": "level"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/hyunahparc/bienvenue-au-croissant/main/data/b2.json",
+            "format": "json",
+            "word_column": "french",
+            "level_column": "level"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/hyunahparc/bienvenue-au-croissant/main/data/c1.json",
+            "format": "json",
+            "word_column": "french",
+            "level_column": "level"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/hyunahparc/bienvenue-au-croissant/main/data/c2.json",
+            "format": "json",
+            "word_column": "french",
+            "level_column": "level"
+          }
+        ],
+        "note": "bienvenue-au-croissant A1–C2（约 4777 词）；仓库未声明 license，运行时抓取、不内置分发"
+      }
+    ]
+  },
+  "es": {
+    "name": "Spanish",
+    "systems": [
+      {
+        "id": "PCIC",
+        "name": "Plan Curricular del Instituto Cervantes",
+        "levels": [
+          "A1",
+          "A2",
+          "B1",
+          "B2",
+          "C1",
+          "C2"
+        ],
+        "sources": [
+          {
+            "url": "https://web.archive.org/web/2016id_/http://cvc.cervantes.es/ensenanza/biblioteca_ele/plan_curricular/niveles/08_nociones_generales_inventario_a1-a2.htm",
+            "format": "html",
+            "parser": "pcic_html",
+            "levels": [
+              "A1",
+              "A2"
+            ]
+          },
+          {
+            "url": "https://web.archive.org/web/2016id_/http://cvc.cervantes.es/ensenanza/biblioteca_ele/plan_curricular/niveles/08_nociones_generales_inventario_b1-b2.htm",
+            "format": "html",
+            "parser": "pcic_html",
+            "levels": [
+              "B1",
+              "B2"
+            ]
+          },
+          {
+            "url": "https://web.archive.org/web/2016id_/http://cvc.cervantes.es/ensenanza/biblioteca_ele/plan_curricular/niveles/08_nociones_generales_inventario_c1-c2.htm",
+            "format": "html",
+            "parser": "pcic_html",
+            "levels": [
+              "C1",
+              "C2"
+            ]
+          },
+          {
+            "url": "https://web.archive.org/web/2016id_/http://cvc.cervantes.es/ensenanza/biblioteca_ele/plan_curricular/niveles/09_nociones_especificas_inventario_a1-a2.htm",
+            "format": "html",
+            "parser": "pcic_html",
+            "levels": [
+              "A1",
+              "A2"
+            ]
+          },
+          {
+            "url": "https://web.archive.org/web/2016id_/http://cvc.cervantes.es/ensenanza/biblioteca_ele/plan_curricular/niveles/09_nociones_especificas_inventario_b1-b2.htm",
+            "format": "html",
+            "parser": "pcic_html",
+            "levels": [
+              "B1",
+              "B2"
+            ]
+          },
+          {
+            "url": "https://web.archive.org/web/2016id_/http://cvc.cervantes.es/ensenanza/biblioteca_ele/plan_curricular/niveles/09_nociones_especificas_inventario_c1-c2.htm",
+            "format": "html",
+            "parser": "pcic_html",
+            "levels": [
+              "C1",
+              "C2"
+            ]
+          }
+        ],
+        "pointers": [
+          "https://cvc.cervantes.es/ensenanza/biblioteca_ele/plan_curricular/",
+          "https://github.com/Heartade/spanish-words-cefr"
+        ],
+        "note": "PCIC 官方 inventories（Wayback 2016 快照；内置解析器 pcic_html）"
+      }
+    ]
+  },
+  "ja": {
+    "name": "Japanese",
+    "systems": [
+      {
+        "id": "JLPT",
+        "name": "JLPT",
+        "levels": [
+          "N5",
+          "N4",
+          "N3",
+          "N2",
+          "N1"
+        ],
+        "sources": [
+          {
+            "url": "https://raw.githubusercontent.com/evanclan/OpenJLPT/main/data/csv/vocab-n5.csv",
+            "format": "csv",
+            "word_column": "word",
+            "level_column": "level"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/evanclan/OpenJLPT/main/data/csv/vocab-n4.csv",
+            "format": "csv",
+            "word_column": "word",
+            "level_column": "level"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/evanclan/OpenJLPT/main/data/csv/vocab-n3.csv",
+            "format": "csv",
+            "word_column": "word",
+            "level_column": "level"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/evanclan/OpenJLPT/main/data/csv/vocab-n2.csv",
+            "format": "csv",
+            "word_column": "word",
+            "level_column": "level"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/evanclan/OpenJLPT/main/data/csv/vocab-n1.csv",
+            "format": "csv",
+            "word_column": "word",
+            "level_column": "level"
+          }
+        ],
+        "note": "OpenJLPT 社区整理，按 N5–N1 分文件"
+      }
+    ]
+  },
+  "ko": {
+    "name": "Korean",
+    "systems": [
+      {
+        "id": "TOPIK",
+        "name": "TOPIK (combined list)",
+        "levels": [
+          "초급",
+          "중급",
+          "고급"
+        ],
+        "sources": [
+          {
+            "url": "https://raw.githubusercontent.com/julienshim/combined_korean_vocabulary_list/master/results.tsv",
+            "format": "tsv",
+            "word_column": "word",
+            "level_column": "topik_level"
+          }
+        ],
+        "note": "国立国语院 + TOPIK 合并表；等级为初/中/高（非 1–6 细分）"
+      }
+    ]
+  },
+  "ru": {
+    "name": "Russian",
+    "systems": [
+      {
+        "id": "TORFL",
+        "name": "TORFL / ТРКИ",
+        "levels": [
+          "A1",
+          "A2",
+          "B1",
+          "B2",
+          "C1",
+          "C2"
+        ],
+        "sources": [
+          {
+            "url": "https://veebiarhiiv.digar.ee/a/20221230203226mp_/http://www.maailmakeeled.ut.ee/sites/default/files/www_ut/b1_leks_minimum_vstuplenie.pdf",
+            "format": "pdf",
+            "parser": "torfl_pdf",
+            "level": "B1"
+          }
+        ],
+        "pointers": [
+          "https://veebiarhiiv.digar.ee/a/20221230203226mp_/http://www.maailmakeeled.ut.ee/sites/default/files/www_ut/b1_leks_minimum_vstuplenie.pdf",
+          "https://www.zlat.spb.ru/"
+        ],
+        "note": "ТРКИ B1 lexical minimum PDF；扫描件文本层损坏时会报 OCR_REQUIRED"
+      }
+    ]
+  },
+  "zh": {
+    "name": "Chinese",
+    "systems": [
+      {
+        "id": "HSK",
+        "name": "HSK 2.0 (official vocabulary)",
+        "levels": [
+          "HSK1",
+          "HSK2",
+          "HSK3",
+          "HSK4",
+          "HSK5",
+          "HSK6"
+        ],
+        "sources": [
+          {
+            "url": "https://www.chinesetest.cn/userfiles/file/HSK/HSK-2012.xls",
+            "format": "xls",
+            "parser": "hsk_xls"
+          }
+        ],
+        "pointers": [
+          "https://www.chinesetest.cn/"
+        ],
+        "note": "Official HSK 2.0 vocabulary XLS; data not bundled. pinyin via pypinyin; level from official file.",
+        "display": "HSK 2.0 (1–6)"
+      }
+    ]
+  }
+}

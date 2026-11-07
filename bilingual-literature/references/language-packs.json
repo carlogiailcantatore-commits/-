@@ -1,0 +1,584 @@
+{
+  "schema_version": 1,
+  "status": "frozen",
+  "bundled_engines": false,
+  "bundled_data": false,
+  "interaction": {
+    "base_lang": "zh",
+    "native_langs": [
+      "zh",
+      "it"
+    ],
+    "translated_others": true,
+    "fallback_lang": "zh"
+  },
+  "targets": {
+    "zh": {
+      "style_profile": "zh",
+      "gloss_lang": "zh"
+    },
+    "it": {
+      "style_profile": "it",
+      "gloss_lang": "it"
+    }
+  },
+  "quality_tiers": {
+    "primary": [
+      "it->zh",
+      "zh->it"
+    ],
+    "secondary_a": [
+      "en->zh",
+      "en->it",
+      "de->zh",
+      "de->it",
+      "fr->zh",
+      "fr->it",
+      "es->zh",
+      "es->it",
+      "ru->zh",
+      "ru->it"
+    ],
+    "secondary_b": [
+      "ja->zh",
+      "ja->it",
+      "la->zh",
+      "la->it"
+    ]
+  },
+  "providers": {
+    "builtin-unicode": {
+      "type": "builtin",
+      "probe": null,
+      "install": null,
+      "bundled": true
+    },
+    "builtin-it": {
+      "type": "builtin",
+      "probe": null,
+      "install": null,
+      "bundled": true
+    },
+    "espeak-ng": {
+      "type": "cli",
+      "probe": [
+        "espeak-ng",
+        "--version"
+      ],
+      "bundled": false,
+      "install": {
+        "windows": "winget install eSpeak-NG.eSpeak-NG",
+        "macos": "brew install espeak-ng",
+        "linux": "sudo apt install espeak-ng"
+      }
+    },
+    "jieba": {
+      "type": "python",
+      "probe": "import jieba",
+      "bundled": false,
+      "install": "pip install jieba"
+    },
+    "pypinyin": {
+      "type": "python",
+      "probe": "import pypinyin",
+      "bundled": false,
+      "install": "pip install pypinyin"
+    },
+    "fugashi": {
+      "type": "python",
+      "probe": "import fugashi",
+      "bundled": false,
+      "install": "pip install fugashi unidic-lite"
+    },
+    "janome": {
+      "type": "python",
+      "probe": "import janome",
+      "bundled": false,
+      "install": "pip install janome"
+    },
+    "unidic": {
+      "type": "python",
+      "probe": "import unidic_lite",
+      "bundled": false,
+      "install": "pip install unidic-lite"
+    },
+    "pykakasi": {
+      "type": "python",
+      "probe": "import pykakasi",
+      "bundled": false,
+      "install": "pip install pykakasi"
+    },
+    "spacy-it": {
+      "type": "python",
+      "probe": "import spacy; spacy.load(\"it_core_news_sm\")",
+      "bundled": false,
+      "install": "pip install spacy && python -m spacy download it_core_news_sm"
+    },
+    "spacy-en": {
+      "type": "python",
+      "probe": "import spacy; spacy.load(\"en_core_web_sm\")",
+      "bundled": false,
+      "install": "pip install spacy && python -m spacy download en_core_web_sm"
+    },
+    "spacy-de": {
+      "type": "python",
+      "probe": "import spacy; spacy.load(\"de_core_news_sm\")",
+      "bundled": false,
+      "install": "pip install spacy && python -m spacy download de_core_news_sm"
+    },
+    "spacy-fr": {
+      "type": "python",
+      "probe": "import spacy; spacy.load(\"fr_core_news_sm\")",
+      "bundled": false,
+      "install": "pip install spacy && python -m spacy download fr_core_news_sm"
+    },
+    "spacy-es": {
+      "type": "python",
+      "probe": "import spacy; spacy.load(\"es_core_news_sm\")",
+      "bundled": false,
+      "install": "pip install spacy && python -m spacy download es_core_news_sm"
+    },
+    "lemminflect": {
+      "type": "python",
+      "probe": "import lemminflect",
+      "bundled": false,
+      "install": "pip install lemminflect"
+    },
+    "pymorphy3": {
+      "type": "python",
+      "probe": "import pymorphy3",
+      "bundled": false,
+      "install": "pip install pymorphy3"
+    },
+    "wiktionary-it": {
+      "type": "online",
+      "probe": null,
+      "bundled": false,
+      "install": null,
+      "url": "https://it.wiktionary.org/w/api.php"
+    },
+    "wiktionary-en": {
+      "type": "online",
+      "probe": null,
+      "bundled": false,
+      "install": null,
+      "url": "https://en.wiktionary.org/w/api.php"
+    },
+    "wiktionary-de": {
+      "type": "online",
+      "probe": null,
+      "bundled": false,
+      "install": null,
+      "url": "https://de.wiktionary.org/w/api.php"
+    },
+    "wiktionary-fr": {
+      "type": "online",
+      "probe": null,
+      "bundled": false,
+      "install": null,
+      "url": "https://fr.wiktionary.org/w/api.php"
+    },
+    "wiktionary-es": {
+      "type": "online",
+      "probe": null,
+      "bundled": false,
+      "install": null,
+      "url": "https://es.wiktionary.org/w/api.php"
+    },
+    "wiktionary-ru": {
+      "type": "online",
+      "probe": null,
+      "bundled": false,
+      "install": null,
+      "url": "https://ru.wiktionary.org/w/api.php"
+    },
+    "wiktionary-la": {
+      "type": "online",
+      "probe": null,
+      "bundled": false,
+      "install": null,
+      "url": "https://la.wiktionary.org/w/api.php"
+    }
+  },
+  "sources": {
+    "zh": {
+      "tier": "primary",
+      "tokenizer": {
+        "required": true,
+        "providers": [
+          "jieba"
+        ]
+      },
+      "lemmatizer": {
+        "required": false,
+        "providers": []
+      },
+      "phonetic": {
+        "required": true,
+        "type": "pinyin",
+        "providers": [
+          "pypinyin"
+        ],
+        "variant": "zh-CN"
+      },
+      "grading": {
+        "required": true,
+        "system": "HSK",
+        "version": "2.0",
+        "dataset_format": "hsk_tsv"
+      },
+      "sentence": {
+        "punctuation": [
+          "。",
+          "！",
+          "？",
+          "；",
+          "：",
+          "，"
+        ]
+      }
+    },
+    "it": {
+      "tier": "primary",
+      "tokenizer": {
+        "required": true,
+        "providers": [
+          "builtin-it"
+        ]
+      },
+      "lemmatizer": {
+        "required": true,
+        "providers": [
+          "spacy-it"
+        ]
+      },
+      "phonetic": {
+        "required": true,
+        "type": "ipa",
+        "providers": [
+          "espeak-ng",
+          "wiktionary-it"
+        ],
+        "variant": "it-IT"
+      },
+      "grading": {
+        "required": true,
+        "system": "CEFR",
+        "version": "Profilo"
+      },
+      "sentence": {
+        "punctuation": [
+          ".",
+          "?",
+          "!",
+          ";",
+          ":",
+          ","
+        ]
+      }
+    },
+    "en": {
+      "tier": "secondary_a",
+      "tokenizer": {
+        "required": true,
+        "providers": [
+          "builtin-unicode"
+        ]
+      },
+      "lemmatizer": {
+        "required": true,
+        "providers": [
+          "spacy-en",
+          "lemminflect"
+        ]
+      },
+      "phonetic": {
+        "required": true,
+        "type": "ipa",
+        "providers": [
+          "espeak-ng",
+          "wiktionary-en"
+        ],
+        "variant": "en-US"
+      },
+      "grading": {
+        "required": true,
+        "system": "CEFR-J",
+        "version": "CEFR-J"
+      },
+      "sentence": {
+        "punctuation": [
+          ".",
+          "?",
+          "!",
+          ";",
+          ":",
+          ","
+        ]
+      }
+    },
+    "de": {
+      "tier": "secondary_a",
+      "tokenizer": {
+        "required": true,
+        "providers": [
+          "builtin-unicode"
+        ]
+      },
+      "lemmatizer": {
+        "required": true,
+        "providers": [
+          "spacy-de"
+        ]
+      },
+      "phonetic": {
+        "required": true,
+        "type": "ipa",
+        "providers": [
+          "espeak-ng",
+          "wiktionary-de"
+        ],
+        "variant": "de-DE"
+      },
+      "grading": {
+        "required": true,
+        "system": "Goethe",
+        "version": "Goethe"
+      },
+      "sentence": {
+        "punctuation": [
+          ".",
+          "?",
+          "!",
+          ";",
+          ":",
+          ","
+        ]
+      }
+    },
+    "fr": {
+      "tier": "secondary_a",
+      "tokenizer": {
+        "required": true,
+        "providers": [
+          "builtin-unicode"
+        ]
+      },
+      "lemmatizer": {
+        "required": true,
+        "providers": [
+          "spacy-fr"
+        ]
+      },
+      "phonetic": {
+        "required": true,
+        "type": "ipa",
+        "providers": [
+          "espeak-ng",
+          "wiktionary-fr"
+        ],
+        "variant": "fr-FR"
+      },
+      "grading": {
+        "required": true,
+        "system": "CEFR",
+        "version": "bienvenue"
+      },
+      "sentence": {
+        "punctuation": [
+          ".",
+          "?",
+          "!",
+          ";",
+          ":",
+          ","
+        ]
+      }
+    },
+    "es": {
+      "tier": "secondary_a",
+      "tokenizer": {
+        "required": true,
+        "providers": [
+          "builtin-unicode"
+        ]
+      },
+      "lemmatizer": {
+        "required": true,
+        "providers": [
+          "spacy-es"
+        ]
+      },
+      "phonetic": {
+        "required": true,
+        "type": "ipa",
+        "providers": [
+          "espeak-ng",
+          "wiktionary-es"
+        ],
+        "variant": "es-ES"
+      },
+      "grading": {
+        "required": true,
+        "system": "PCIC",
+        "version": "PCIC"
+      },
+      "sentence": {
+        "punctuation": [
+          ".",
+          "?",
+          "!",
+          ";",
+          ":",
+          ","
+        ]
+      }
+    },
+    "ru": {
+      "tier": "secondary_a",
+      "tokenizer": {
+        "required": true,
+        "providers": [
+          "builtin-unicode"
+        ]
+      },
+      "lemmatizer": {
+        "required": true,
+        "providers": [
+          "pymorphy3"
+        ]
+      },
+      "phonetic": {
+        "required": true,
+        "type": "ipa",
+        "providers": [
+          "espeak-ng",
+          "wiktionary-ru"
+        ],
+        "variant": "ru-RU"
+      },
+      "grading": {
+        "required": true,
+        "system": "TORFL",
+        "version": "TORFL"
+      },
+      "sentence": {
+        "punctuation": [
+          ".",
+          "?",
+          "!",
+          ";",
+          ":",
+          ","
+        ]
+      }
+    },
+    "ja": {
+      "tier": "secondary_b",
+      "tokenizer": {
+        "required": true,
+        "providers": [
+          "fugashi",
+          "janome"
+        ]
+      },
+      "lemmatizer": {
+        "required": true,
+        "providers": [
+          "unidic"
+        ]
+      },
+      "phonetic": {
+        "required": true,
+        "type": "romaji",
+        "providers": [
+          "pykakasi"
+        ],
+        "variant": "ja-JP"
+      },
+      "grading": {
+        "required": true,
+        "system": "JLPT",
+        "version": "OpenJLPT"
+      },
+      "sentence": {
+        "punctuation": [
+          "。",
+          "！",
+          "？",
+          "；",
+          "：",
+          "、"
+        ]
+      }
+    },
+    "la": {
+      "tier": "secondary_b",
+      "tokenizer": {
+        "required": true,
+        "providers": [
+          "builtin-unicode"
+        ]
+      },
+      "lemmatizer": {
+        "required": false,
+        "providers": []
+      },
+      "phonetic": {
+        "required": true,
+        "type": "ipa",
+        "providers": [
+          "espeak-ng",
+          "wiktionary-la"
+        ],
+        "variant": "la"
+      },
+      "grading": {
+        "required": false,
+        "system": null,
+        "version": null
+      },
+      "sentence": {
+        "punctuation": [
+          ".",
+          "?",
+          "!",
+          ";",
+          ":",
+          ","
+        ]
+      },
+      "vocab_mode": "all",
+      "vocab_note": "拉丁语不按等级过滤，提取全部词；翻译由用户词典或模型补齐"
+    }
+  },
+  "pairs": {
+    "it->zh": "primary",
+    "zh->it": "primary",
+    "en->zh": "secondary_a",
+    "en->it": "secondary_a",
+    "de->zh": "secondary_a",
+    "de->it": "secondary_a",
+    "fr->zh": "secondary_a",
+    "fr->it": "secondary_a",
+    "es->zh": "secondary_a",
+    "es->it": "secondary_a",
+    "ru->zh": "secondary_a",
+    "ru->it": "secondary_a",
+    "ja->zh": "secondary_b",
+    "ja->it": "secondary_b",
+    "la->zh": "secondary_b",
+    "la->it": "secondary_b"
+  },
+  "vocab_policy": {
+    "mode": "all_or_nothing",
+    "missing_dependency": "no_vocab",
+    "options": [
+      "fix",
+      "skip",
+      "abort"
+    ],
+    "skip_keeps_document": true,
+    "allow_partial_vocab": false
+  }
+}

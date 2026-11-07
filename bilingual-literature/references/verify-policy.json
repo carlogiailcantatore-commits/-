@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "frozen",
+  "statuses": [
+    "PASS",
+    "PASS_DEGRADED",
+    "FAIL"
+  ],
+  "retry_limit": 2,
+  "degradations": {
+    "MISSING_IMAGE": {
+      "requires_user_confirm": true,
+      "changes_status": true
+    },
+    "MISSING_FOOTNOTE": {
+      "requires_user_confirm": true,
+      "changes_status": true
+    },
+    "PAGE_BREAK": {
+      "requires_user_confirm": true,
+      "changes_status": true
+    }
+  },
+  "warnings": [
+    "FONT_FALLBACK",
+    "SIZE_FALLBACK",
+    "NOTION_LIMITED",
+    "QUALITY_SECONDARY"
+  ],
+  "failures": [
+    "TEXT_LOSS",
+    "MISSING_TRANSLATION",
+    "TOKEN_BROKEN",
+    "LINK_MISMATCH",
+    "HEADING_ORDER",
+    "EMPTY_PARAGRAPH",
+    "ORPHAN_TRANSLATION"
+  ],
+  "remediation": {
+    "TEXT_LOSS": "back_to_structure",
+    "MISSING_TRANSLATION": "back_to_translate",
+    "TOKEN_BROKEN": "back_to_translate",
+    "LINK_MISMATCH": "retry_build",
+    "HEADING_ORDER": "back_to_structure",
+    "EMPTY_PARAGRAPH": "retry_build",
+    "ORPHAN_TRANSLATION": "retry_build"
+  }
+}

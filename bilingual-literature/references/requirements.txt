@@ -1,0 +1,14 @@
+python-docx
+lxml
+PyMuPDF
+openpyxl
+# Chinese: HSK 2.0 + pinyin
+xlrd
+jieba
+pypinyin
+# Optional phonetic/NLP providers (language packs point to them; models installed separately)
+spacy
+pymorphy3
+pykakasi
+fugashi
+unidic-lite

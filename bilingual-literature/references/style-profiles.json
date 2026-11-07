@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "status": "frozen",
+  "size_source": "docx_w_sz_half_points_div_2",
+  "fallback_body_pt": 12,
+  "fallback_heading_pt": {
+    "L0": 22,
+    "L1": 18,
+    "L2": 16,
+    "L3": 14,
+    "L4": 13
+  },
+  "heading_monotonic_required": true,
+  "markers": {
+    "format": "<!-- blm pid={pid} kind={kind} src={src_pt} -->",
+    "strip_for": [
+      "txt",
+      "notion"
+    ]
+  },
+  "targets": {
+    "zh": {
+      "source_font": "Times New Roman",
+      "translation_font": "KaiTi",
+      "translation_font_fallback": [
+        "楷体",
+        "Noto Serif CJK SC",
+        "SimSun"
+      ],
+      "translation_color": "#1F4E79",
+      "translation_italic": false,
+      "body_translation_size": "max(8, src_pt - 2)",
+      "heading_translation_size": "src_pt",
+      "heading_color": "#1F4E79",
+      "width_profile": "zh"
+    },
+    "it": {
+      "source_font": "Times New Roman",
+      "translation_font": "Times New Roman",
+      "translation_font_fallback": [
+        "Liberation Serif",
+        "DejaVu Serif"
+      ],
+      "translation_color": "#1F4E79",
+      "translation_italic": false,
+      "body_translation_size": "src_pt",
+      "heading_translation_size": "src_pt",
+      "heading_color": "#1F4E79",
+      "width_profile": "it"
+    }
+  }
+}

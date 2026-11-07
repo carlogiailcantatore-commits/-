@@ -1,0 +1,9 @@
+.bilingual-venv/
+.bilingual-vocab.json
+vocab/
+**/__pycache__/
+out/
+*.docx
+*.pdf
+*.xlsx
+*.db
