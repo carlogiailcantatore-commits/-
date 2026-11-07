@@ -35,7 +35,7 @@ vocab/
 | fr | CEFR | 已可用 | bienvenue-au-croissant A1–C2 JSON |
 | de | Goethe | 已可用 | Goethe A1–B1 PDF + goethe_pdf |
 | it | CEFR (Profilo) | 已可用 | Profilo A1–B2 Wayback + profilo_html |
-| es | PCIC | 已可用 | PCIC inventories Wayback + pcic_html |
+| es | PCIC | 已可用 | PCIC inventories Wayback + pcic_html；备用指路 Heartade/spanish-words-cefr |
 | ru | TORFL | 需 OCR | ТРКИ B1 扫描 PDF + torfl_pdf；无 Tesseract 报 OCR_REQUIRED |
 | zh | HSK 2.0 (1–6) | 已可用 | 官方 HSK-2012.xls + hsk_xls；pinyin 由 pypinyin 生成；不内置数据 |
 
@@ -46,4 +46,6 @@ vocab/
 - 解析器：`hsk_xls`；需要 `xlrd`
 - 拼音：`pypinyin`，带声调；不内置拼音表
 - 发行版只给 URL 和解析器，不随包带 HSK 数据
+- IPA 回退使用 Wiktionary（it/en/de/fr/es/ru/la），不下载离线 dump
+- Profilo/PCIC 使用 Internet Archive Wayback 快照
 - 全局版可把官方 XLS 转成 `data/hsk2.tsv` 缓存，但该文件不进入发行包

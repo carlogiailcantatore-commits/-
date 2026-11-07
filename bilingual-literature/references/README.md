@@ -4,8 +4,12 @@
 
 ## 适用智能体
 
-- **有文件读写 + shell/Python 执行能力的智能体**：WorkBuddy、豆包（代码执行）、Claude Code、Cursor、Codex 等，可直接调用 `scripts/run.py`。
-- **只有聊天/写作能力的智能体**：把 `SKILL.md` 当提示词，按其中的规则人工执行；无法自动跑 docx/词库/PDF。
+- **WorkBuddy**：上传 `bilingual-literature` 文件夹为 Skill zip。
+- **Claude Code / Claude.ai Skills**：使用 `SKILL.md` 和可选参考文件；有 shell 的客户端可跑 `scripts/run.py`。
+- **Cursor / Codex / DSH（DeepSeek Harness）等有 shell 的智能体**：读 `SKILL.md`，直接跑 Python CLI。
+- **Gemini Apps Skills**：只支持文本上传，脚本不能访问外部网站；用内容/参考模式。
+- **豆包工作桌面端**：要求根目录小写 `skill.md`；本 PC 包是大写 `SKILL.md`，需要 lowercase wrapper。豆包移动端不支持自定义技能。
+- **只有聊天/写作能力的智能体**：把 `SKILL.md` 当提示词，按规则人工执行；无法自动跑 DOCX/词库/PDF。
 - 本包不依赖任何专有框架；`SKILL.md` 是流程说明，`scripts/` 是普通 Python CLI。
 
 ## 安装

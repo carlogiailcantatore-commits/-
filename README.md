@@ -4,9 +4,14 @@ A portable skill for turning 9 source languages (zh/it/en/de/fr/es/ru/ja/la) int
 
 ## Compatibility
 
-- WorkBuddy: upload the bilingual-literature folder as a Skill zip.
-- Claude Code / Cursor / Codex and other agents with file + shell access: run scripts/run.py or the individual scripts.
-- Chat-only agents can read SKILL.md as instructions, but cannot run the DOCX/PDF/vocabulary pipeline.
+- **WorkBuddy**: upload the `bilingual-literature` folder as a Skill zip.
+- **Claude Code / Claude.ai Skills**: use `SKILL.md` + optional reference files; shell clients can run `scripts/run.py`.
+- **Cursor / Codex / DSH (DeepSeek Harness) / other shell-capable agents**: read `SKILL.md` and run the Python CLI.
+- **Gemini Apps Skills**: text-only upload; scripts cannot make external requests; use content/reference mode.
+- **Doubao Work desktop**: requires lowercase `skill.md` in the root; this PC package uses `SKILL.md`, so it needs a lowercase wrapper. Mobile Doubao is not supported for custom skills.
+- **Chat-only agents**: read `SKILL.md` as instructions, but cannot run the DOCX/PDF/vocabulary pipeline.
+
+This list is not exhaustive: any client that supports Agent Skills / `SKILL.md`, or can read files and run Python, can use the package within its capabilities.
 
 ## Quick start
 
