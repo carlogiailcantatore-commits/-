@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright (C) 2026 贾国放 (Jia Guofang)
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: Unlicense
 """Build bilingual BLM Markdown (and optional Notion Markdown) from work.json + translations.json.
 
 Usage:

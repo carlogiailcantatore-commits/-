@@ -39,12 +39,12 @@ THIRD_PARTY.md
 
 ## Third-party data and links / 第三方数据与链接
 
-This repository does not bundle third-party datasets, models, fonts, engines, or services. URLs and install commands are provided only as pointers for users to obtain those resources under their own terms. The GPL license applies only to this repository's code and documentation; it does not grant any rights to third-party data, services, or content. Links are not endorsements or authorization to redistribute, and users are responsible for complying with the applicable source terms and local law.
+This repository does not bundle third-party datasets, models, fonts, engines, or services. URLs and install commands are provided only as pointers for users to obtain those resources under their own terms. The Unlicense applies only to this repository's code and documentation; it does not grant any rights to third-party data, services, or content. Links are not endorsements or authorization to redistribute, and users are responsible for complying with the applicable source terms and local law.
 
-本仓库不打包第三方数据集、模型、字体、引擎或服务；URL 与安装命令仅作获取入口，第三方资源仍受其自身条款约束。GPL 许可仅覆盖本仓库的代码与文档，不授予任何第三方数据、服务或内容的权利。链接不构成授权、背书或再分发许可；使用者应自行遵守来源条款与当地法律。
+本仓库不打包第三方数据集、模型、字体、引擎或服务；URL 与安装命令仅作获取入口，第三方资源仍受其自身条款约束。Unlicense 仅覆盖本仓库的代码与文档，不授予任何第三方数据、服务或内容的权利。链接不构成授权、背书或再分发许可；使用者应自行遵守来源条款与当地法律。
 
 ## License
 
 The author's bilingual use statement is in [DECLARATION.md](DECLARATION.md).
 
-Code: GNU GPL v3.0 or later (see LICENSE). Derivative works must remain open under the same license. Third-party data sources: see THIRD_PARTY.md; datasets are fetched at runtime and are not redistributed with this repository.
+Code: the Unlicense (public-domain dedication; see LICENSE). No attribution or copyleft obligation is imposed by the project code. Third-party data sources: see THIRD_PARTY.md; datasets are fetched at runtime and are not redistributed with this repository.

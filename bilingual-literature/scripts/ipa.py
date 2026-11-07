@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright (C) 2026 贾国放 (Jia Guofang)
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: Unlicense
 """IPA transcription helper.
 
 Backends:

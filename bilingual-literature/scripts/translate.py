@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright (C) 2026 贾国放 (Jia Guofang)
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: Unlicense
 """Split a work.json translation worklist into chunks and merge translated chunks.
 
 export: translate.py export work.json out_dir [--chunk-chars N]

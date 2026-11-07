@@ -5,9 +5,9 @@ display_name_en: Bilingual Literature
 description: 把 9 种源语言（zh/it/en/de/fr/es/ru/ja/la）的外文文献整理成中文或意大利语句对句双语稿（DOCX/PDF/TXT/Notion Markdown），保留图片、脚注、链接、标题层级，并可导出分级词汇表。触发词：句对句翻译、句对句译、双语整理、对照翻译，以及意大利语对应说法。
 description_zh: 把 9 种源语言的外文文献整理成中文或意大利语句对句双语稿，保留原格式，并可导出分级词汇表。
 description_en: Turn 9 source languages into Chinese or Italian sentence-pair bilingual editions, preserving layout, images, links and headings, with optional graded vocabulary.
-version: 0.1.17
+version: 0.2.0
 author: Bilingual Literature Contributors
-license: GPL-3.0-or-later
+license: Unlicense
 examples_zh:
   - 把这份意大利语文献句对句翻译成中文，保留图片和脚注
   - 把这篇 PDF 做成中外对照稿，并导出 B1 以上词汇表

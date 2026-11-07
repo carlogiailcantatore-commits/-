@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright (C) 2026 贾国放 (Jia Guofang)
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: Unlicense
 """Convert DOCX to PDF with LibreOffice headless (never Word).
 Usage: python to_pdf.py <docx> <out.pdf> [--print-install-command]
 Exit codes: 0 ok; 2 LibreOffice missing.

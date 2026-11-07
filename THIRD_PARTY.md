@@ -1,12 +1,12 @@
 ## Third-party data and links / 第三方数据与链接
 
-This repository does not bundle third-party datasets, models, fonts, engines, or services. URLs and install commands are provided only as pointers for users to obtain those resources under their own terms. The GPL license applies only to this repository's code and documentation; it does not grant any rights to third-party data, services, or content. Links are not endorsements or authorization to redistribute, and users are responsible for complying with the applicable source terms and local law.
+This repository does not bundle third-party datasets, models, fonts, engines, or services. URLs and install commands are provided only as pointers for users to obtain those resources under their own terms. The Unlicense applies only to this repository's code and documentation; it does not grant any rights to third-party data, services, or content. Links are not endorsements or authorization to redistribute, and users are responsible for complying with the applicable source terms and local law.
 
-本仓库不打包第三方数据集、模型、字体、引擎或服务；URL 与安装命令仅作获取入口，第三方资源仍受其自身条款约束。GPL 许可仅覆盖本仓库的代码与文档，不授予任何第三方数据、服务或内容的权利。链接不构成授权、背书或再分发许可；使用者应自行遵守来源条款与当地法律。
+本仓库不打包第三方数据集、模型、字体、引擎或服务；URL 与安装命令仅作获取入口，第三方资源仍受其自身条款约束。Unlicense 仅覆盖本仓库的代码与文档，不授予任何第三方数据、服务或内容的权利。链接不构成授权、背书或再分发许可；使用者应自行遵守来源条款与当地法律。
 
 # Third-Party Data Sources and Notices
 
-This project code is licensed under GNU GPL v3.0 or later (see LICENSE). It does NOT bundle third-party
+This project code is released under the Unlicense (see LICENSE). It does NOT bundle third-party
 vocabulary datasets; the init command fetches them at runtime from the URLs below.
 You are responsible for complying with each source terms.
 
@@ -59,7 +59,7 @@ databases to a public repository.
 ## Python packages (not bundled)
 
 - python-docx (MIT), lxml (BSD), openpyxl (MIT), xlrd (BSD).
-- PyMuPDF (AGPL-3.0 or commercial; check its terms before redistribution; installed separately).
+- PyMuPDF (AUnlicense or commercial; check its terms before redistribution; installed separately).
 - jieba (MIT), pypinyin (MIT).
 - spacy (MIT), pymorphy3 (MIT), pykakasi (MIT), fugashi (MIT), unidic-lite (UniDic terms).
 - requirements.txt is an install pointer only; no wheels or model files are shipped.

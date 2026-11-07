@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright (C) 2026 贾国放 (Jia Guofang)
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: Unlicense
 """OCR a scanned PDF into text (one block per page).
 Usage: python ocr_pdf.py <input.pdf> <out.txt> [--lang ita+eng]
 Exit codes: 0 ok; 3 OCR tool missing; 2 usage.

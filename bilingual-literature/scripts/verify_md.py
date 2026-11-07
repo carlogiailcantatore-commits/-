@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright (C) 2026 贾国放 (Jia Guofang)
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: Unlicense
 """Verify BLM/Notion Markdown with declared degradations and JSON report."""
 import sys, os, json, re
 TOKEN = re.compile(r'⟦(?:L\d+|F\d+|IMG\d+)⟧')
