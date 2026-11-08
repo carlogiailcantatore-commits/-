@@ -1,0 +1,267 @@
+{
+ "schema_version": 1,
+ "project": "bilingual-literature",
+ "version": "0.2.0",
+ "license": "Unlicense",
+ "paths": {
+  "distribution": "C:\\DSH个人助手工作区\\dist\\bilingual-literature-universal\\bilingual-literature",
+  "global": "C:\\DSH工作区\\.dsh\\skills\\dsh-bilingual-literature",
+  "scripts": "scripts",
+  "references": "references"
+ },
+ "invocation": {
+  "dispatcher": "scripts/run.py <command> [args...]",
+  "direct": "python <scripts>/<script>.py [args...]",
+  "reuse_rule": "Copy the whole scripts directory and references directory; do not copy a single script."
+ },
+ "run_map": {
+  "extract": "extract.py",
+  "split-units": "split_units.py",
+  "outline": "outline.py",
+  "worklist": "worklist.py",
+  "translate": "translate.py",
+  "build-blm": "build_blm.py",
+  "verify-md": "verify_md.py",
+  "build-docx": "build_docx.py",
+  "build-txt": "build_txt.py",
+  "to-pdf": "to_pdf.py",
+  "verify": "verify.py",
+  "widths": "widths.py",
+  "ipa": "ipa.py",
+  "phonetic": "phonetic.py",
+  "lemmatize": "lemmatize.py",
+  "ocr-pdf": "ocr_pdf.py",
+  "vocab": "vocab.py",
+  "check-tools": "check_tools.py"
+ },
+ "tools": [
+  {
+   "name": "extract",
+   "script": "extract.py",
+   "usage": "<input> <source.json>",
+   "inputs": [
+    "docx",
+    "pdf",
+    "txt"
+   ],
+   "outputs": [
+    "source.json"
+   ]
+  },
+  {
+   "name": "split-units",
+   "script": "split_units.py",
+   "usage": "<source.json> <units.json> [--body-size N] [--classical]",
+   "inputs": [
+    "source.json"
+   ],
+   "outputs": [
+    "units.json"
+   ],
+   "notes": "--classical for classical Chinese clause splitting"
+  },
+  {
+   "name": "outline",
+   "script": "outline.py",
+   "usage": "<units.json> <outline.md>",
+   "inputs": [
+    "units.json"
+   ],
+   "outputs": [
+    "outline.md"
+   ]
+  },
+  {
+   "name": "worklist",
+   "script": "worklist.py",
+   "usage": "<units.json> <work.json> [--structure structure.json]",
+   "inputs": [
+    "units.json",
+    "structure.json"
+   ],
+   "outputs": [
+    "work.json"
+   ]
+  },
+  {
+   "name": "translate",
+   "script": "translate.py",
+   "usage": "export <work.json> <dir> | merge <work.json> <dir> --out <translations.json>",
+   "inputs": [
+    "work.json"
+   ],
+   "outputs": [
+    "translations.json"
+   ]
+  },
+  {
+   "name": "build-blm",
+   "script": "build_blm.py",
+   "usage": "--work work.json --translations translations.json --out bilingual.md",
+   "inputs": [
+    "work.json",
+    "translations.json"
+   ],
+   "outputs": [
+    "bilingual.md"
+   ],
+   "options": [
+    "--notion",
+    "--source-lang",
+    "--target-lang",
+    "--assets-prefix",
+    "--sizes",
+    "--strict",
+    "--image-alts",
+    "--notes-zh"
+   ]
+  },
+  {
+   "name": "build-docx",
+   "script": "build_docx.py",
+   "usage": "<bilingual.md> <out.docx>",
+   "inputs": [
+    "bilingual.md"
+   ],
+   "outputs": [
+    "docx"
+   ]
+  },
+  {
+   "name": "build-txt",
+   "script": "build_txt.py",
+   "usage": "<bilingual.md> <out.txt>",
+   "inputs": [
+    "bilingual.md"
+   ],
+   "outputs": [
+    "txt"
+   ]
+  },
+  {
+   "name": "to-pdf",
+   "script": "to_pdf.py",
+   "usage": "<docx> <out.pdf>",
+   "inputs": [
+    "docx"
+   ],
+   "outputs": [
+    "pdf"
+   ],
+   "external": [
+    "LibreOffice"
+   ]
+  },
+  {
+   "name": "verify-md",
+   "script": "verify_md.py",
+   "usage": "--work work.json --md bilingual.md [--degradations d.json] [--report r.json]",
+   "inputs": [
+    "work.json",
+    "bilingual.md"
+   ],
+   "outputs": [
+    "verify report"
+   ]
+  },
+  {
+   "name": "verify",
+   "script": "verify.py",
+   "usage": "<source.json> <out.docx> [--degradations d.json] [--report r.json]",
+   "inputs": [
+    "source.json",
+    "docx"
+   ],
+   "outputs": [
+    "verify report"
+   ]
+  },
+  {
+   "name": "vocab",
+   "script": "vocab.py",
+   "usage": "catalog | init | status | precheck | extract | fill | build | glossary",
+   "inputs": [
+    "markdown or word json"
+   ],
+   "outputs": [
+    "sqlite db",
+    "vocab json",
+    "docx",
+    "xlsx"
+   ],
+   "notes": "--all for full vocabulary; Latin defaults to all"
+  },
+  {
+   "name": "phonetic",
+   "script": "phonetic.py",
+   "usage": "<word> --lang <lang>",
+   "inputs": [
+    "word"
+   ],
+   "outputs": [
+    "JSON"
+   ]
+  },
+  {
+   "name": "lemmatize",
+   "script": "lemmatize.py",
+   "usage": "<word> --lang <lang> [--context text]",
+   "inputs": [
+    "word"
+   ],
+   "outputs": [
+    "lemma"
+   ]
+  },
+  {
+   "name": "ocr-pdf",
+   "script": "ocr_pdf.py",
+   "usage": "<input.pdf> <out.txt> [--lang rus]",
+   "inputs": [
+    "pdf"
+   ],
+   "outputs": [
+    "txt"
+   ],
+   "external": [
+    "Tesseract"
+   ]
+  },
+  {
+   "name": "widths",
+   "script": "widths.py",
+   "usage": "--work work.json --translations translations.json --out sizes.json [--usable-pt N]",
+   "inputs": [
+    "work.json",
+    "translations.json"
+   ],
+   "outputs": [
+    "sizes.json"
+   ]
+  },
+  {
+   "name": "check-tools",
+   "script": "check_tools.py",
+   "usage": "",
+   "inputs": [],
+   "outputs": [
+    "JSON"
+   ]
+  }
+ ],
+ "external": [
+  "LibreOffice",
+  "Tesseract OCR",
+  "eSpeak NG",
+  "spaCy models",
+  "pymorphy3",
+  "pykakasi",
+  "fugashi",
+  "UniDic-lite"
+ ],
+ "notes": [
+  "Third-party data and tools are not bundled.",
+  "PyMuPDF is AGPL-3.0 or commercial.",
+  "Set the process working directory before calling scripts that use default output or vocab paths."
+ ]
+}

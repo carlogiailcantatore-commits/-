@@ -16,6 +16,7 @@ This list is not exhaustive: any client that supports Agent Skills / `SKILL.md`,
 ## Documentation
 
 - [技能说明书](技能说明书.md) — 完整中文使用说明
+- [SKILL工具调用说明](SKILL工具调用说明.md) — 给其它项目单独调用脚本
 - [Third-party data and links](THIRD_PARTY.md)
 
 ## Quick start
