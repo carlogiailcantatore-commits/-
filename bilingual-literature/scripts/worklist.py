@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright (C) 2026 贾国放 (Jia Guofang)
-# SPDX-License-Identifier: Unlicense
 """Build a translation worklist from split_units.py output.
 
 Usage: python worklist.py <units.json> <work.json> [--structure structure.json]
@@ -124,12 +122,20 @@ def build(units_path, out_path, structure_path=None):
                 items.append(syn)
     for after, lst in synth_by_after.items():
         for s in lst:
-            items.append({
+            item = {
                 'pid': 'synth-%s-%s' % (after, s.get('kind')),
                 'kind': s.get('kind', 'L1'), 'it': s.get('it', ''), 'zh': s.get('zh'), 'synth': True,
                 'sents': [{'sid': 'synth-%s-0' % after, 'text': s.get('it', ''), 'zh': s.get('zh'), 'tokens': []}],
                 'links': [], 'fns': [], 'images': [],
-            })
+            }
+            try:
+                neg = int(after) < 0
+            except (TypeError, ValueError):
+                neg = False
+            if neg:
+                items.insert(0, item)
+            else:
+                items.append(item)
     out = {
         'source': data.get('source'),
         'body_size': data.get('body_size'),

@@ -14,7 +14,10 @@ BULLETS = ('⚫', '·', '➡', '-', '–', '•')
 LINK_TOKEN = '⟦L%d⟧'
 FN_TOKEN = '⟦F%d⟧'
 IMG_TOKEN = '⟦IMG%d⟧'
-ABBR = re.compile(r'(?:\b(?:P|S|S\.t|N|n|nn|pag|pagg|sec|secc|cfr|ecc|etc|Id|cfr)\.)$')
+ABBR = re.compile(r'(?:\b(?:P|S|S\.t|N|n|nn|pag|pagg|p|pp|sec|secc|segg|cfr|ecc|etc|Id|ibid|op|cit|ed|ediz|vol|voll|cap|capp|fig|tav|art|artt|num|sig|sigg|prof|dott|mons)\.)$')
+# 版式弱信号：编号型章节标题（原文没加粗/没放大时补一个结构提示）
+HEAD_HINT = re.compile(r'^(?:第[一二三四五六七八九十百]+[章节部分篇]|Parte\s+[IVXLC\d]+|Capitolo\s+\d+|'
+                       r'Chapter\s+\d+|Prefazione\s+\d+|序[一二三四五六七八九十]?[、.．]?\s*)', re.I)
 
 def get_paragraphs(data):
     if 'paragraphs' in data:
@@ -49,52 +52,95 @@ def build_unit(p):
     txt = re.sub(r'[ \t]+', ' ', txt)
     return txt.strip(), links, fns, imgs
 
-def split_sentences(text, classical=False):
-    out, buf, i, n = [], [], 0, len(text)
+# 引号/括号配对：未闭合时不切句（避免「阿们！阿们！」被切开）
+QUOTE_OPEN = {'「': '」', '『': '』', '“': '”', '«': '»', '〈': '〉', '《': '》',
+              '【': '】', '（': '）', '(': ')', '[': ']', '{': '}'}
+CLOSE_CHARS = '”’」』）】》>)'
+LEAD_PUNCT = '，、；：,;:'
+
+def _scan_sentences(text, classical=False):
+    """按标点切句，返回 [(句子, reason)]。
+
+    reason: punct / eol / merge（并回前句）
+    规则：
+      1. 引号/括号未闭合时不切（QUOTE_OPEN 配对栈）；
+      2. 切点后若余下以逗号类标点开头，并回前句；
+      3. 拉丁句点仍走缩写/数字/大写判定（ABBR）；
+      4. classical=True 时中文逗号/分号/冒号也作为切点。
+    """
+    out, buf, stack, i, n = [], [], [], 0, len(text)
     while i < n:
         ch = text[i]
+        if ch in QUOTE_OPEN:
+            buf.append(ch); stack.append(QUOTE_OPEN[ch]); i += 1; continue
+        if stack and ch == stack[-1]:
+            buf.append(ch); stack.pop(); i += 1; continue
         buf.append(ch)
-        if classical and ch in '，；：':
-            j = i + 1
-            while j < n and text[j] in '”’」』）】》':
-                buf.append(text[j]); j += 1
-            out.append(''.join(buf).strip())
-            buf = []
-            while j < n and text[j] in ' \t\r\n':
-                j += 1
+
+        is_cjk_stop = ch in '。！？'
+        is_latin_stop = ch in '.?!'
+        is_classical_stop = classical and ch in '，；：'
+        if not (is_cjk_stop or is_latin_stop or is_classical_stop):
+            i += 1; continue
+
+        # 计算切点位置：吸掉紧跟的闭引号/闭括号
+        j = i + 1
+        while j < n and text[j] in CLOSE_CHARS:
+            j += 1
+        rest = text[j:]
+        if not rest.strip():
             i = j
             continue
-        if ch in '。！？':
-            j = i + 1
-            while j < n and text[j] in '”’」』）】》':
-                buf.append(text[j]); j += 1
-            out.append(''.join(buf).strip())
-            buf = []
-            while j < n and text[j] in ' \t\r\n':
-                j += 1
-            i = j
+
+        # 引号内不切
+        if stack:
+            i += 1
             continue
-        if ch in '.?!':
-            m = re.match(r'\s+', text[i + 1:])
-            if m:
-                nxt = text[i + 1 + m.end():]
-                before = ''.join(buf)
-                is_abbr = bool(ABBR.search(before)) or bool(re.search(r'(?:^|[\s(])[A-Z]\.$', before))
-                is_num = i + 1 < n and text[i + 1].isdigit()
-                starts_upper = bool(nxt) and (nxt[0].isupper() or nxt[0].isdigit() or nxt[0] in '«"“‘⟦(')
-                if (not is_abbr) and (not is_num) and starts_upper:
-                    out.append(''.join(buf).rstrip())
-                    buf = []
-                    j = i + 1
-                    while j < n and text[j] in ' \t':
-                        j += 1
-                    i = j
-                    continue
-        i += 1
+
+        if is_latin_stop:
+            m = re.match(r'\s+', rest)
+            if not m:
+                i += 1
+                continue
+            nxt = rest[m.end():]
+            before = ''.join(buf)
+            is_abbr = bool(ABBR.search(before)) or bool(re.search(r'(?:^|[\s(])[A-Z]\.$', before))
+            is_num = bool(nxt) and nxt[0].isdigit()
+            starts_upper = bool(nxt) and (nxt[0].isupper() or nxt[0].isdigit() or nxt[0] in '«"“‘⟦(')
+            if is_abbr or is_num or not starts_upper:
+                i += 1
+                continue
+
+        out.append([''.join(buf).strip(), 'punct'])
+        buf = []
+        i = j
+        while i < n and text[i] in ' \t\r\n':
+            i += 1
+
     tail = ''.join(buf).strip()
     if tail:
-        out.append(tail)
-    return out
+        out.append([tail, 'eol'])
+
+    # 切点后以逗号类标点开头 → 并回前句；前句以冒号结尾 → 与后句合并（冒号后是列举/引语）
+    merged = []
+    for sent, reason in out:
+        if merged and sent and sent[:1] in tuple(LEAD_PUNCT):
+            merged[-1][0] += sent
+            merged[-1][1] = 'merge'
+        elif merged and merged[-1][0].endswith(('：', ':')):
+            merged[-1][0] += sent
+            merged[-1][1] = 'merge'
+        else:
+            merged.append([sent, reason])
+    return [(s, r) for s, r in merged]
+
+def split_sentences_ex(text, classical=False):
+    """返回 [(句子, reason)]，供需要可解释切分依据的调用方使用。"""
+    return _scan_sentences(text, classical)
+
+def split_sentences(text, classical=False):
+    """兼容旧接口：只返回句子文本。"""
+    return [s for s, _ in _scan_sentences(text, classical)]
 
 def body_size_of(paras):
     cnt = Counter()
@@ -163,6 +209,9 @@ def main():
             kind = 'L4'
         elif p.get('bold') and mx <= body_size and len(t) <= 120 and not re.search(r'[.!]$', t):
             kind = 'L3'
+        elif HEAD_HINT.match(t) and len(t) <= 48 and not re.search(r'[。！？.!?]$', t) \
+                and not t.startswith(BULLETS):
+            kind = 'L1' if re.match(r'^(?:第[一二三四五六七八九十百]+[部分篇]|Parte|Prefazione|序)', t, re.I) else 'L2'
         elif mx in hmap:
             kind = hmap[mx]
         elif t.startswith(BULLETS) or p.get('numbered') or re.match(r'^\d+[\).]\s', t) or t.startswith('- '):
@@ -175,14 +224,17 @@ def main():
         row = {'idx': idx, 'kind': kind, 'size': mx, 'bold': p.get('bold', False), 'text': t,
                'links': links, 'fns': fns, 'images': imgs}
         if kind in ('L0', 'L1', 'L2', 'L3', 'L4', 'image', 'empty'):
-            row['sents'] = [{'sid': 'p%d_0' % idx, 'text': t}]
+            row['sents'] = [{'sid': 'p%d_0' % idx, 'text': t, 'reason': 'heading'}]
         else:
-            sents = split_sentences(t, classical)
-            # 保真检查：切分后拼接必须和原文一致（忽略空白）
-            a = re.sub(r'\s+', '', t); b = re.sub(r'\s+', '', ''.join(sents))
+            pairs = split_sentences_ex(t, classical)
+            # 保真检查：切分后拼接必须和原文一致（忽略空白）；不一致则整段不切
+            a = re.sub(r'\s+', '', t)
+            b = re.sub(r'\s+', '', ''.join(p[0] for p in pairs))
             if a != b:
                 print('WARN_SPLIT_MISMATCH p%d' % idx)
-            row['sents'] = [{'sid': 'p%d_%d' % (idx, k), 'text': s} for k, s in enumerate(sents)]
+                pairs = [(t, 'fallback_whole')]
+            row['sents'] = [{'sid': 'p%d_%d' % (idx, k), 'text': s, 'reason': r}
+                            for k, (s, r) in enumerate(pairs)]
         rows.append(row)
     notes = [{'nid': n['id'], 'text': n['text']} for n in data.get('footnotes', [])]
     json.dump({'source': data.get('file'), 'mode': mode, 'body_size': body_size,

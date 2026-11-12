@@ -7,8 +7,12 @@ import sys, os, re, json
 from docx import Document
 from docx.shared import Pt, Cm, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.style import WD_STYLE_TYPE
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
+from docx.opc.part import Part
+from docx.opc.packuri import PackURI
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
 
 LEVEL_SIZE = {1: 22, 2: 18, 3: 16, 4: 14, 5: 13}
 BODY_PT = 12
@@ -130,6 +134,145 @@ FALLBACK_HEADING = {1: 22, 2: 18, 3: 16, 4: 14, 5: 13}
 FALLBACK_BODY = 12
 MARKER_RE = re.compile(r'^<!--\s*blm\s+pid=([^\s]+)\s+kind=([A-Za-z0-9]+)\s+src=([0-9.]+)\s*-->$')
 
+# ---- 真脚注（footnotes.xml） ----
+NOTE_MARK_RE = re.compile(r'\[注([A-Za-z0-9._\-]+)\]')
+NOTE_HEAD_RE = re.compile(r'^##\s*注释')
+NOTE_ITEM_RE = re.compile(r'^\*\*\[([^\]]+)\]\*\*\s*(.*)$')
+FOOTNOTES_PARTNAME = '/word/footnotes.xml'
+FOOTNOTES_CT = 'application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml'
+
+
+def xml_escape(s):
+    return (s or '').replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+
+
+def build_footnotes_xml(entries):
+    """entries: [(fid, text)]；text 可含 \n（原文 + 译文各一行）。"""
+    head = ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            '<w:footnotes xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'
+            ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">')
+    sep = ('<w:footnote w:type="separator" w:id="-1"><w:p><w:r><w:separator/></w:r></w:p></w:footnote>'
+           '<w:footnote w:type="continuationSeparator" w:id="0"><w:p><w:r><w:continuationSeparator/></w:r></w:p></w:footnote>')
+    body = []
+    for fid, text in entries:
+        lines = [ln for ln in (text or '').split('\n')]
+        paras = []
+        for ln in lines:
+            paras.append('<w:p><w:pPr><w:pStyle w:val="FootnoteText"/></w:pPr>'
+                         '<w:r><w:t xml:space="preserve">%s</w:t></w:r></w:p>' % xml_escape(ln))
+        body.append('<w:footnote w:id="%d">%s</w:footnote>' % (fid, ''.join(paras)))
+    return head + sep + ''.join(body) + '</w:footnotes>'
+
+
+def attach_footnotes(doc, entries):
+    part = Part(PackURI(FOOTNOTES_PARTNAME), FOOTNOTES_CT,
+                build_footnotes_xml(entries).encode('utf-8'), doc.part.package)
+    doc.part.relate_to(part, RT.FOOTNOTES)
+
+
+def add_footnote_ref(par, fid, size_pt):
+    r = par.add_run()
+    rPr = r._r.get_or_add_rPr()
+    rStyle = OxmlElement('w:rStyle')
+    rStyle.set(qn('w:val'), 'FootnoteReference')
+    va = OxmlElement('w:vertAlign')
+    va.set(qn('w:val'), 'superscript')
+    rPr.append(rStyle)
+    rPr.append(va)
+    ref = OxmlElement('w:footnoteReference')
+    ref.set(qn('w:id'), str(fid))
+    r._r.append(ref)
+
+
+def ensure_footnote_styles(doc):
+    try:
+        ft = doc.styles['Footnote Text']
+    except KeyError:
+        ft = doc.styles.add_style('Footnote Text', WD_STYLE_TYPE.PARAGRAPH)
+        ft.base_style = doc.styles['Normal']
+    ft.font.size = Pt(9)
+    try:
+        fr = doc.styles['Footnote Reference']
+    except KeyError:
+        fr = doc.styles.add_style('Footnote Reference', WD_STYLE_TYPE.CHARACTER)
+    fr.font.superscript = True
+
+
+def split_note_blocks(blocks):
+    """抽走 BLM 的「## 注释」区，返回 (剩余 blocks, notes=[{nid,text,zh}])。"""
+    out, notes = [], []
+    i, n = 0, len(blocks)
+    while i < n:
+        kind, val = blocks[i]
+        if kind == 'raw' and NOTE_HEAD_RE.match(val.strip()):
+            i += 1
+            while i < n and blocks[i][0] == 'raw' and not blocks[i][1].strip():
+                i += 1
+            while i < n:
+                kind2, v2 = blocks[i]
+                s = v2.strip()
+                if not s:
+                    i += 1
+                    continue
+                m = NOTE_ITEM_RE.match(s)
+                if not m:
+                    break
+                nid, text = m.group(1).strip(), m.group(2).strip()
+                i += 1
+                while i < n and blocks[i][0] == 'raw' and not blocks[i][1].strip():
+                    i += 1
+                zh = ''
+                if i < n and blocks[i][0] == 'raw' and blocks[i][1].strip().startswith('>'):
+                    zh = blocks[i][1].strip()[1:].strip()
+                    i += 1
+                notes.append({'nid': nid, 'text': text, 'zh': zh})
+            continue
+        out.append(blocks[i])
+        i += 1
+    return out, notes
+
+
+def inject_term_markers(blocks, notes):
+    """没有内联 [注N] 的注释（如专有名词）→ 在该词首次出现处补标记。"""
+    markers = set()
+    for kind, val in blocks:
+        if kind == 'raw':
+            markers.update(NOTE_MARK_RE.findall(val))
+    for nt in notes:
+        nid = str(nt.get('nid'))
+        term = (nt.get('text') or '').strip()
+        if not term or nid in markers:
+            continue
+        for idx, (kind, val) in enumerate(blocks):
+            if kind != 'raw':
+                continue
+            s = val
+            stripped = s.lstrip()
+            if stripped.startswith('#') or stripped.startswith('>'):
+                continue
+            if term in s:
+                blocks[idx] = (kind, s.replace(term, term + '[注%s]' % nid, 1))
+                markers.add(nid)
+                break
+    return markers
+
+
+def add_text_with_notes(par, text, size_pt, color, ctx):
+    """把 [注N] 渲染成真脚注引用；ctx 为 None 时退化为普通文本。"""
+    if not ctx or '[注' not in text:
+        add_inline(par, text, size_pt, color)
+        return
+    pos = 0
+    for m in NOTE_MARK_RE.finditer(text):
+        if m.start() > pos:
+            add_inline(par, text[pos:m.start()], size_pt, color)
+        fid = ctx['ref'](m.group(1))
+        if fid:
+            add_footnote_ref(par, fid, size_pt)
+        pos = m.end()
+    if pos < len(text):
+        add_inline(par, text[pos:], size_pt, color)
+
 def load_profiles():
     base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     for rel in ('data/style-profiles.json', 'references/style-profiles.json'):
@@ -145,6 +288,84 @@ PROFILES = load_profiles()
 
 def target_profile(target):
     return (PROFILES.get('targets') or {}).get(target) or {}
+
+HEADING_SIZES = {1: 18, 2: 16, 3: 14, 4: 13}   # L1..L4 → Heading 1..4
+TITLE_SIZE = 22                                  # L0 → 自定义 DocTitle（不进目录）
+
+def ensure_heading_styles(doc):
+    """L0 用自定义 DocTitle（不参与目录）；L1–L4 映射到 Word 内置 Heading 1–4，
+    字号照旧但带大纲级别，导航窗格与“插入目录”才能识别。"""
+    try:
+        title = doc.styles['DocTitle']
+    except KeyError:
+        title = doc.styles.add_style('DocTitle', WD_STYLE_TYPE.PARAGRAPH)
+        title.base_style = doc.styles['Normal']
+    title.font.size = Pt(TITLE_SIZE)
+    title.font.bold = True
+    title.font.color.rgb = BLACK
+    title.font.name = 'Times New Roman'
+    for lv, size in HEADING_SIZES.items():
+        name = 'Heading %d' % lv
+        try:
+            st = doc.styles[name]
+        except KeyError:
+            st = doc.styles.add_style(name, WD_STYLE_TYPE.PARAGRAPH)
+            st.base_style = doc.styles['Normal']
+            st.paragraph_format.outline_level = lv - 1
+        st.font.size = Pt(size)
+        st.font.bold = True
+        st.font.color.rgb = BLACK
+        st.font.name = 'Times New Roman'
+        rPr = st.element.get_or_add_rPr()
+        rFonts = rPr.find(qn('w:rFonts'))
+        if rFonts is None:
+            rFonts = OxmlElement('w:rFonts')
+            rPr.append(rFonts)
+        rFonts.set(qn('w:eastAsia'), CJK_SOURCE_FONT)
+    for name in ('DocTitle',):
+        rPr = doc.styles[name].element.get_or_add_rPr()
+        rFonts = rPr.find(qn('w:rFonts'))
+        if rFonts is None:
+            rFonts = OxmlElement('w:rFonts')
+            rPr.append(rFonts)
+        rFonts.set(qn('w:eastAsia'), CJK_SOURCE_FONT)
+
+def add_toc(doc, title='目录'):
+    """插入 TOC 域；Word 打开后右键“更新域”或按 F9 生成目录条目。"""
+    p = doc.add_paragraph()
+    r = p.add_run(title)
+    r.bold = True
+    p.paragraph_format.space_before = Pt(6)
+    p.paragraph_format.space_after = Pt(6)
+    fp = doc.add_paragraph()
+    fld = OxmlElement('w:fldSimple')
+    fld.set(qn('w:instr'), r'TOC \o "1-3" \h \z \u')
+    rr = OxmlElement('w:r')
+    t = OxmlElement('w:t')
+    t.text = '（目录占位：在 Word 中右键“更新域”生成）'
+    rr.append(t)
+    fld.append(rr)
+    fp._p.append(fld)
+
+def add_page_number_footer(section):
+    """页脚居中显示 PAGE / NUMPAGES 域。"""
+    footer = section.footer
+    p = footer.paragraphs[0] if footer.paragraphs else footer.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    def field(instr):
+        run = p.add_run()
+        b = OxmlElement('w:fldChar'); b.set(qn('w:fldCharType'), 'begin')
+        it = OxmlElement('w:instrText'); it.set(qn('xml:space'), 'preserve'); it.text = instr
+        sep = OxmlElement('w:fldChar'); sep.set(qn('w:fldCharType'), 'separate')
+        tt = OxmlElement('w:t'); tt.text = '1'
+        end = OxmlElement('w:fldChar'); end.set(qn('w:fldCharType'), 'end')
+        for el in (b, it, sep, tt, end):
+            run._r.append(el)
+
+    field('PAGE')
+    p.add_run(' / ')
+    field('NUMPAGES')
 
 def heading(doc, level, text, usable_pt, src_pt=None, target='zh', level_pt=None):
     prof = target_profile(target)
@@ -164,8 +385,9 @@ def heading(doc, level, text, usable_pt, src_pt=None, target='zh', level_pt=None
     def fits(txt):
         return (not txt) or width_estimate(txt, size) <= usable_pt * 0.90
     short = fits(it) and fits(zh) and width_estimate(merged, size) <= usable_pt * 0.90
+    style_name = 'DocTitle' if level == 1 else 'Heading %d' % min(level - 1, 4)
     if short:
-        p = doc.add_paragraph()
+        p = doc.add_paragraph(style=style_name)
         p.paragraph_format.keep_with_next = True
         p.paragraph_format.keep_together = True
         p.paragraph_format.space_before = Pt(10)
@@ -178,7 +400,7 @@ def heading(doc, level, text, usable_pt, src_pt=None, target='zh', level_pt=None
         for txt, is_zh in ((it, False), (zh, True)):
             if not txt:
                 continue
-            p = doc.add_paragraph()
+            p = doc.add_paragraph(style=style_name)
             p.paragraph_format.keep_with_next = True
             p.paragraph_format.keep_together = True
             p.paragraph_format.space_before = Pt(10 if not is_zh else 0)
@@ -188,7 +410,7 @@ def heading(doc, level, text, usable_pt, src_pt=None, target='zh', level_pt=None
             else:
                 add_inline(p, '**' + txt + '**', size, BLACK)
 
-def body_pair(doc, original, translation, src_pt=None, target='zh'):
+def body_pair(doc, original, translation, src_pt=None, target='zh', notes_ctx=None):
     prof = target_profile(target)
     src_size = src_pt or (PROFILES.get('fallback_body_pt') or FALLBACK_BODY)
     trans_size = max(8, src_size - 2) if target == 'zh' else src_size
@@ -201,7 +423,7 @@ def body_pair(doc, original, translation, src_pt=None, target='zh'):
         p1.paragraph_format.space_after = Pt(0)
         p1.paragraph_format.left_indent = Pt(0)
         p1.paragraph_format.first_line_indent = Pt(0)
-        add_inline(p1, original, src_size, BLACK)
+        add_text_with_notes(p1, original, src_size, BLACK, notes_ctx)
     if translation:
         p2 = doc.add_paragraph()
         p2.paragraph_format.keep_together = True
@@ -252,6 +474,9 @@ def parse_md(path):
 
 def build(md_path, out_path):
     meta, blocks = parse_md(md_path)
+    # 抽走「## 注释」区 → 真脚注；没有内联标记的（专有名词）在首次出现处补标记
+    blocks, notes = split_note_blocks(blocks)
+    inject_term_markers(blocks, notes)
     target = (meta.get('target_lang') or 'zh').strip()
     if target not in ('zh', 'it'):
         target = 'zh'
@@ -278,17 +503,55 @@ def build(md_path, out_path):
         for lv, src in present:
             heading_map['L%d' % lv] = src
     doc = Document()
+    ensure_heading_styles(doc)
+    ensure_footnote_styles(doc)
+    # 真脚注上下文：同一条注释被多次引用时，各给一个独立脚注 id
+    fn_state = {'next': 1, 'entries': [], 'used': set()}
+
+    def note_ref(nid_key):
+        key = str(nid_key)
+        note = next((n for n in notes if str(n.get('nid')) == key), None)
+        if not note:
+            return None
+        fid = fn_state['next']
+        fn_state['next'] += 1
+        text = note.get('text') or ''
+        if note.get('zh'):
+            text += '\n' + note['zh']
+        fn_state['entries'].append((fid, text))
+        fn_state['used'].add(key)
+        return fid
+
+    notes_ctx = {'ref': note_ref}
+    # 让 Word 打开时自动更新域（目录/页码），无需用户手动按 F9
+    try:
+        upd = OxmlElement('w:updateFields')
+        upd.set(qn('w:val'), 'true')
+        doc.settings.element.append(upd)
+    except Exception:
+        pass
     sec = doc.sections[0]
     sec.page_width = Cm(21.0); sec.page_height = Cm(29.7)
     sec.left_margin = Cm(2.0); sec.right_margin = Cm(2.0)
     sec.top_margin = Cm(2.0); sec.bottom_margin = Cm(2.0)
+    add_page_number_footer(sec)
     usable_pt = (21.0 / 2.54 * 72) - 113.4
     pending = None
     pending_src = None
+    # 原文没有 L0 标题时，直接把目录放在文档最前面
+    has_title = False
+    for kind, val in blocks:
+        if kind == 'raw' and re.match(r'^#\s+\S', val.strip()):
+            has_title = True
+            break
+    toc_added = False
+    if not has_title:
+        add_toc(doc)
+        toc_added = True
     for kind, val in blocks:
         if kind == 'code':
             if pending is not None:
-                body_pair(doc, pending, None, pending_src, target); pending = None
+                body_pair(doc, pending, None, pending_src, target, notes_ctx=notes_ctx); pending = None
             for ln in val.split('\n'):
                 if ln.strip() == '':
                     continue
@@ -307,14 +570,18 @@ def build(md_path, out_path):
         m = re.match(r'^(#{1,5})\s+(.*)$', s)
         if m:
             if pending is not None:
-                body_pair(doc, pending, None, pending_src, target); pending = None
+                body_pair(doc, pending, None, pending_src, target, notes_ctx=notes_ctx); pending = None
             lv = len(m.group(1))
             heading_src = pending_src if not heading_map else None
             heading(doc, lv, m.group(2).strip(), usable_pt, heading_src, target, heading_map.get('L%d' % lv))
+            # 文档标题（L0）之后插入目录；标题用 DocTitle，不进目录
+            if not toc_added and lv == 1:
+                add_toc(doc)
+                toc_added = True
             continue
         if s.startswith('!['):
             if pending is not None:
-                body_pair(doc, pending, None, pending_src, target); pending = None
+                body_pair(doc, pending, None, pending_src, target, notes_ctx=notes_ctx); pending = None
             mm = re.match(r'!\[[^\]]*\]\(([^)]+)\)', s)
             if mm:
                 path = mm.group(1)
@@ -330,14 +597,14 @@ def build(md_path, out_path):
         if s.startswith('>'):
             trans = s[1:].strip()
             if pending is not None:
-                body_pair(doc, pending, trans, pending_src, target); pending = None
+                body_pair(doc, pending, trans, pending_src, target, notes_ctx=notes_ctx); pending = None
             else:
-                body_pair(doc, '', trans, pending_src, target)
+                body_pair(doc, '', trans, pending_src, target, notes_ctx=notes_ctx)
             continue
         bm = re.match(r'^\*\*(.+)\*\*$', s)
         if bm:
             if pending is not None:
-                body_pair(doc, pending, None, pending_src, target); pending = None
+                body_pair(doc, pending, None, pending_src, target, notes_ctx=notes_ctx); pending = None
             p = doc.add_paragraph()
             p.paragraph_format.keep_with_next = True
             p.paragraph_format.space_before = Pt(6); p.paragraph_format.space_after = Pt(3)
@@ -347,10 +614,25 @@ def build(md_path, out_path):
         if am:
             s = am.group(1) + am.group(2)
         if pending is not None:
-            body_pair(doc, pending, None, pending_src, target)
+            body_pair(doc, pending, None, pending_src, target, notes_ctx=notes_ctx)
         pending = s
     if pending is not None:
-        body_pair(doc, pending, None, pending_src, target)
+        body_pair(doc, pending, None, pending_src, target, notes_ctx=notes_ctx)
+    # 未被引用的注释（术语在正文没出现）退回「注释」区，避免丢内容
+    unused = [n for n in notes if str(n.get('nid')) not in fn_state['used']]
+    if unused:
+        heading(doc, 2, '注释', usable_pt, None, target)
+        for nt in unused:
+            p = doc.add_paragraph()
+            r = p.add_run('[%s] ' % nt.get('nid'))
+            set_run_font(r, BODY_PT, True, False, BLACK)
+            add_inline(p, nt.get('text') or '', BODY_PT, BLACK)
+            if nt.get('zh'):
+                p2 = doc.add_paragraph()
+                add_inline(p2, nt['zh'], max(8, BODY_PT - 2), BLUE)
+    if fn_state['entries']:
+        attach_footnotes(doc, fn_state['entries'])
+        print('footnotes: %d (unused notes kept in section: %d)' % (len(fn_state['entries']), len(unused)))
     doc.save(out_path)
     print('OK ' + out_path)
 
